@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 
 namespace TestTask
@@ -8,15 +7,12 @@ namespace TestTask
     public class DeutschDictionary
     {
         public Dictionary<char, List<string>> Dictionary { get; set; }
-        private readonly string baseDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\");
-        private const string path = @"Data\de-dictionary.tsv";
-        public DeutschDictionary()
+        public DeutschDictionary(string inputFullPath)
         {
-            string fullPath = Path.Combine(baseDirectory, path);
-            if (File.Exists(fullPath))
+            if (File.Exists(inputFullPath))
             {
                 Dictionary = new Dictionary<char, List<string>>();
-                foreach (string line in File.ReadAllLines(fullPath))
+                foreach (string line in File.ReadAllLines(inputFullPath))
                 {
                     AddWord(line);                
                 }
@@ -24,6 +20,7 @@ namespace TestTask
             else
             {
                 Console.WriteLine("File doesn`t exist!");
+                throw new FileLoadException();
             }
         }
         private void AddWord(string word)
@@ -40,8 +37,5 @@ namespace TestTask
                 Dictionary[key].Add(lowercaseWord);
             }
         }
-
-
-
     }
 }
