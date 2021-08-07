@@ -25,6 +25,7 @@ namespace TestTask
             else
             {
                 Console.WriteLine("File doesn`t exist!");
+                throw new FileLoadException();
             }
         }
 
@@ -38,21 +39,15 @@ namespace TestTask
             File.WriteAllLines(OutputFullPath, answer);
         }
 
-        public string WordDecompose(string word, Dictionary<char, List<string>> dictionary)
+        private string WordDecompose(string word, Dictionary<char, List<string>> dictionary)
         {
             DecompositionItem currentItem = new DecompositionItem("", word, null);
             currentItem.Decompose(dictionary);
-            if (currentItem.IsNull())
-            {
-                return ComposeAnswer(word, null);
-            }
-            if (currentItem.NextWords.First().CurrentWord.Equals(word))
-            {
-                currentItem.NextWords.Remove(currentItem.NextWords.First());
-            }
+            currentItem.RemoveWordFromNextWords(word);
+
             while (true)
             {
-                if (currentItem is null || currentItem.IsNull())
+                if (currentItem.IsNull())
                 {
                     return ComposeAnswer(word, null);
                 }
@@ -73,10 +68,8 @@ namespace TestTask
                 if(item.NextWords.Count == 0)
                 {
                     if (item.IsNull())
-                        return null;
-                    var tmpItem = item.ParrentItem;
-                    tmpItem.NextWords.Remove(item);
-                    item = tmpItem;
+                        return item;
+                    item = item.DeleteItem();
                 }
                 else
                 {
