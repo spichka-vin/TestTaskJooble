@@ -39,5 +39,18 @@ namespace TestTask
                 return true;
             return false;
         }
+        public DecompositionItem DeleteItem()
+        {
+            if (ParrentItem is null)
+                return null;
+            ParrentItem.NextWords.Remove(this);
+            return ParrentItem;
+        }
+        public void RemoveWordFromNextWords(string word)
+        {
+            DecompositionItem itemForRemove = NextWords.FirstOrDefault(x => x.CurrentWord.Equals(word));
+            if (!(itemForRemove is null))
+                NextWords.Remove(itemForRemove);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
+using System.Linq;
 
 namespace TestTask.Tests
 {
@@ -51,6 +52,46 @@ namespace TestTask.Tests
             item.Decompose(dictionary);
 
             Assert.IsTrue(0 != item.NextWords.Count);
+        }
+        [Test]
+        public void DeleteItemWithNullParrentItem()
+        {
+            DecompositionItem item = new DecompositionItem("", "arbeiten", null);
+            DecompositionItem parrentItem = item.DeleteItem();
+
+            Assert.IsNull(parrentItem);
+        }
+        [Test]
+        public void DeleteItemWithNotNullParrentItem()
+        {
+            DecompositionItem parrentItem = new DecompositionItem("", "arbeiten", null);
+            parrentItem.NextWords = new List<DecompositionItem>();
+            DecompositionItem childItem1 = new DecompositionItem("arbeit", "arbeiten", parrentItem);
+            parrentItem.NextWords.Add(childItem1);
+            DecompositionItem childItem2 = new DecompositionItem("arbeiten", "arbeiten", parrentItem);
+            parrentItem.NextWords.Add(childItem2);
+
+            DecompositionItem deleteResult = childItem1.DeleteItem();
+
+            Assert.IsNotNull(deleteResult);
+            Assert.IsFalse(deleteResult.NextWords.Count == 0);
+            Assert.IsEmpty(deleteResult.NextWords.Where(x => x.CurrentWord == childItem1.CurrentWord));
+        }
+
+        [TestCase ("arbeit", 1)]
+        [TestCase("arbeitet", 2)]
+        public void RemoveWordFromNextWordsTests(string word, int nextWordsCount)
+        {
+            DecompositionItem parrentItem = new DecompositionItem("", "arbeiten", null);
+            parrentItem.NextWords = new List<DecompositionItem>();
+            DecompositionItem childItem1 = new DecompositionItem("arbeit", "arbeiten", parrentItem);
+            parrentItem.NextWords.Add(childItem1);
+            DecompositionItem childItem2 = new DecompositionItem("arbeiten", "arbeiten", parrentItem);
+            parrentItem.NextWords.Add(childItem2);
+
+            parrentItem.RemoveWordFromNextWords(word);
+
+            Assert.AreEqual(parrentItem.NextWords.Count, nextWordsCount);
         }
     }
 }
