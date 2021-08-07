@@ -20,6 +20,10 @@ namespace TestTask
         {
             NextWords = new List<DecompositionItem>();
             char key = RemainingPart[0];
+            if (!dictionary.ContainsKey(key))
+            {
+                return;
+            }
             foreach(string item in dictionary[key])
             {
                 if (RemainingPart.StartsWith(item))
